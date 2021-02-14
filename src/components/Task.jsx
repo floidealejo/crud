@@ -11,9 +11,10 @@ const Task = ({value,editTask,deleteTask}) => {
                 >
                 Eliminar
                 </button>
+
                 <button 
                 className="btn btn-warning  btn-sm float-right mx-2"
-                onClick={editTask}
+                onClick={()=>{editTask(value)}}
                 >
                 Editar
                 </button>

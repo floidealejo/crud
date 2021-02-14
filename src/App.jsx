@@ -5,6 +5,8 @@ import Task from './components/Task'
 function App() {
   const [task, setTask] = useState("")
   const [tasks, setTasks] = useState([])
+  const [editMode, setEditMode] = useState(false)
+  const [id, setId] = useState('')
 
   const handleOnChange = (text) =>{
     setTask(text.target.value)
@@ -20,6 +22,17 @@ function App() {
     setTasks([...tasks,newTask])
     setTask("")
   }
+  
+  const handleSaveTask = (event)=>{
+    event.preventDefault()
+    task === ""? console.log("Is empty") : setTask("");
+    
+    const editedTasks = tasks.map((item)=>item.id === id ? {id, name :task}:item)
+    setTasks(editedTasks)
+    setEditMode(false)
+    setTask("")
+    setId("")
+  }
 
   const handleDeleteTask = (id) =>{
     
@@ -28,8 +41,10 @@ function App() {
     // deleteItem.map(v=>console.log(v));
   }
 
-  const handleEditTask = () =>{
-    console.log("Quiero editar");
+  const handleEditTask = (theTask) =>{
+    setTask(theTask.name)
+    setEditMode(true)
+    setId(theTask.id)
   }
   return (
     <div className="container mt-5">
@@ -58,8 +73,13 @@ function App() {
           
         </div>
         <div className="col-4">
-          <h4 className="text-center">Formulario</h4>
-          <form onSubmit={handleOnSubmit}>
+            <h4 className="text-center">
+              {
+              console.log(task)
+                // editMode? "Modificar tarea":"Agregar tarea"
+              }
+            </h4>
+          <form onSubmit={editMode ? handleSaveTask : handleOnSubmit}>
             <input 
             className="form-control mb-2" 
             placeholder="ingrese la tarea..." 
@@ -67,9 +87,12 @@ function App() {
             onChange={handleOnChange}
             value={task}
             />
-            <button className="btn btn-dark btn-block" 
+            <button className={
+              editMode ?
+              "btn btn-warning btn-block":
+              "btn btn-dark btn-block"} 
             type="submit"
-            >Agregar</button>
+            >{editMode ? "Guardar":"Agregar"}</button>
           </form>
         </div>
       </div>
