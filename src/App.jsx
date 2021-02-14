@@ -3,10 +3,11 @@ import shortid from 'shortid'
 import Task from './components/Task'
 
 function App() {
+  const [editMode, setEditMode] = useState(false)
+  const [error, setError] = useState(null)
+  const [id, setId] = useState('')
   const [task, setTask] = useState("")
   const [tasks, setTasks] = useState([])
-  const [editMode, setEditMode] = useState(false)
-  const [id, setId] = useState('')
 
   const handleOnChange = (text) =>{
     setTask(text.target.value)
@@ -14,7 +15,9 @@ function App() {
   
   const handleOnSubmit = (event) =>{
     event.preventDefault()
-    task === ""? console.log("Is empty") : setTask("");
+    if (!validateForm()) {
+      return
+    }
     const newTask = {
       id: shortid.generate(),
       name: task,
@@ -39,6 +42,15 @@ function App() {
     const deleteItem = tasks.filter(task => task.id !== id)
     setTasks(deleteItem)
     // deleteItem.map(v=>console.log(v));
+  }
+
+  const validateForm = () =>{
+    setError(null)
+    if(task === ""){
+      setError("Debes ingresar una tarea") 
+      return false
+    }
+    return true
   }
 
   const handleEditTask = (theTask) =>{
@@ -68,7 +80,7 @@ function App() {
               )
             })
             }
-          </ul>:<h5>No hy tareas</h5>
+          </ul>:<li className="list-group-item">No hay tareas</li>
           }
           
         </div>
@@ -87,6 +99,9 @@ function App() {
             onChange={handleOnChange}
             value={task}
             />
+            {
+              error && <span className="text-danger">{error}</span>
+            }
             <button className={
               editMode ?
               "btn btn-warning btn-block":
