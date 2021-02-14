@@ -1,8 +1,9 @@
 import React,{useState,useEffect} from 'react'
-import { addDocument, getCollection } from './actions'
+import { addDocument, getCollection, updateDocument } from './actions'
 import Task from './components/Task'
 
 function App() {
+  // TODO: Correction of method update
   const [editMode, setEditMode] = useState(false)
   const [error, setError] = useState(null)
   const [id, setId] = useState('')
@@ -17,6 +18,7 @@ function App() {
       }
     })()
   }, [])
+  
   const handleOnChange = (text) =>{
     setTask(text.target.value)
   }
@@ -35,10 +37,15 @@ function App() {
     setTask("")
   }
   
-  const handleSaveTask = (event)=>{
+  const handleSaveTask = async(event)=>{
     event.preventDefault()
     task === ""? console.log("Is empty") : setTask("");
-    
+
+    const result = await updateDocument("tasks",id,{name:task})
+    if (!result.statusResponse) {
+      setError(result.error)
+      return
+    }
     const editedTasks = tasks.map((item)=>item.id === id ? {id, name :task}:item)
     setTasks(editedTasks)
     setEditMode(false)
@@ -55,11 +62,12 @@ function App() {
 
   const validateForm = () =>{
     setError(null)
+    let isValid = true
     if(task === ""){
       setError("Debes ingresar una tarea") 
-      return false
+      isValid = false
     }
-    return true
+    return isValid
   }
 
   const handleEditTask = (theTask) =>{
@@ -96,11 +104,11 @@ function App() {
         <div className="col-4">
             <h4 className="text-center">
               {
-              console.log(task)
-                // editMode? "Modificar tarea":"Agregar tarea"
+              // console.log(task)
+                editMode? "Modificar tarea":"Agregar tarea"
               }
             </h4>
-          <form onSubmit={editMode ? handleSaveTask : handleOnSubmit}>
+          <form onSubmit={editMode === true? handleSaveTask : handleOnSubmit}>
             <input 
             className="form-control mb-2" 
             placeholder="ingrese la tarea..." 
@@ -112,11 +120,11 @@ function App() {
               error && <span className="text-danger">{error}</span>
             }
             <button className={
-              editMode ?
+              editMode  === true?
               "btn btn-warning btn-block":
               "btn btn-dark btn-block"} 
             type="submit"
-            >{editMode ? "Guardar":"Agregar"}</button>
+            >{editMode  === true? "Guardar":"Agregar"}</button>
           </form>
         </div>
       </div>
