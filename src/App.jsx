@@ -1,5 +1,6 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import shortid from 'shortid'
+import { getCollection } from './actions'
 import Task from './components/Task'
 
 function App() {
@@ -9,6 +10,12 @@ function App() {
   const [task, setTask] = useState("")
   const [tasks, setTasks] = useState([])
 
+  useEffect(() => {
+    (async()=>{
+      const result = await getCollection("tasks")
+      console.log(result);
+    })()
+  }, [])
   const handleOnChange = (text) =>{
     setTask(text.target.value)
   }
