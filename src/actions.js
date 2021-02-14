@@ -15,4 +15,16 @@ export const getCollection = async(collection)=>{
         result.error = error
     }
     return result
-} 
+}
+
+export const addDocument = async(collection,data) =>{
+    const result = {statusResponse : false,data:null,error:null}
+    try {
+        const response = await database.collection(collection).add(data)
+        result.data = {id : response.id}
+        result.statusResponse = true
+    } catch (error) {
+        result.error = error
+    }
+    return result
+}

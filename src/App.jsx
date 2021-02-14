@@ -1,6 +1,5 @@
 import React,{useState,useEffect} from 'react'
-import shortid from 'shortid'
-import { getCollection } from './actions'
+import { addDocument, getCollection } from './actions'
 import Task from './components/Task'
 
 function App() {
@@ -13,23 +12,26 @@ function App() {
   useEffect(() => {
     (async()=>{
       const result = await getCollection("tasks")
-      console.log(result);
+      if (result.statusResponse) {
+        setTasks(result.data)
+      }
     })()
   }, [])
   const handleOnChange = (text) =>{
     setTask(text.target.value)
   }
   
-  const handleOnSubmit = (event) =>{
+  const handleOnSubmit = async(event) =>{
     event.preventDefault()
     if (!validateForm()) {
       return
     }
-    const newTask = {
-      id: shortid.generate(),
-      name: task,
+    const result = await addDocument("tasks",{name : task})
+    if (!result.statusResponse) {
+      setError(result.error)
+      return
     }
-    setTasks([...tasks,newTask])
+    setTasks([...tasks,{id: result.data.id,name:task}])
     setTask("")
   }
   
